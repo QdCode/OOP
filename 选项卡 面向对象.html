@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			div{
+				display:none
+			}
+		</style>
+	</head>
+	<body>
+		<section id="div1">
+			<input type="button" value="按钮一" style="background:red"/>
+			<input type="button" value="按钮二"/>
+			<input type="button" value="按钮三"/>
+			<div style="display:block">div111</div>
+			<div>div222</div>
+			<div>div333</div>
+		</section>
+		<section id="div2">
+			<input type="button" value="按钮一" style="background:red"/>
+			<input type="button" value="按钮二"/>
+			<input type="button" value="按钮三"/>
+			<div style="display:block">div111</div>
+			<div>div222</div>
+			<div>div333</div>
+		</section>
+		<input type="button" id="btn1" value="第二个停止播放"/>
+		<input type="button" id="btn2" value="第一个开始播放"/>
+		<input type="button" id="btn3" value="两个反转"/>
+		<input type="button" id="btn4" value="同时开始"/>
+		<input type="button" id="btn5" value="同时停止"/>
+		
+		
+		<script>
+			/*
+				启动选项卡
+					new Tab(parent)
+
+				实例方法：
+					autoPlay 自动播放
+					stop 停止
+					status 状态
+			*/
+			//独有的是属性，共有的是方法，属性加在构造函数里面，方法加在构造函数的原型上
+			function Tab(parent){
+				this.inps = parent.getElementsByTagName("input");
+				this.divs = parent.getElementsByTagName("div");
+				this.num = 0;
+				this.timer = null;
+				//状态
+				this.status;
+				
+				this.click();
+			}
+			Tab.prototype.click = function(){
+				var _this = this
+				for (var i = 0; i < this.inps.length; i++) {
+					this.inps[i].index = i;
+					this.inps[i].onclick =function(){
+						_this.change(this.index)
+					}
+				}
+			}
+			
+			Tab.prototype.change = function(index){
+				for (var i = 0; i < this.inps.length; i++) {
+					this.inps[i].style.background="";
+					this.divs[i].style.display="none";
+				}
+				this.inps[index].style.background = "red";
+				this.divs[index].style.display="block";
+			}
+			
+			Tab.prototype.autoPlay = function(){
+				//定时器里的function中的this指的是window；
+				var _this = this;
+				this.timer = setInterval(function(){
+					_this.num++;
+					_this.num %= _this.inps.length;
+					_this.change(_this.num);
+				},1000)
+			}
+			
+			Tab.prototype.stop = function(){
+				clearInterval(this.timer)
+				this.timer = null;
+			}
+			Tab.prototype.status = function(){
+				return !!this.timer;
+				
+			}
+			var t1 = new Tab(div1);
+			var t2 = new Tab(div2);
+			
+			t2.autoPlay();
+			
+			btn1.onclick=function(){
+				t2.stop();
+			}
+			btn2.onclick=function(){
+				t1.autoPlay();
+			}
+			btn3.onclick=function(){
+				//两个反转。判断状态：如果t1.status()的值不为空，说明有定时器
+				if(t1.status()){
+					t1.stop();
+				}else{
+					t1.autoPlay();
+				}
+				
+				if(t2.status()){
+					t2.stop();
+				}else{
+					t2.autoPlay();
+				}
+			}
+			btn4.onclick = function(){
+				t1.autoPlay();
+				t2.autoPlay();
+			}
+			btn5.onclick = function(){
+				t1.stop();
+				t2.stop();
+			}
+			
+			
+		</script>
+	</body>
+</html>
